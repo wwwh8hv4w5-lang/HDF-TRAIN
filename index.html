@@ -1,4 +1,4 @@
-<title>HDF TRAIN 1.1</title>
+<title>HDF TRAIN 1.2</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap">
@@ -238,12 +238,13 @@ body:not(.cine) #cineSous{display:none}
   <h2>Pause</h2>
   <button id="mnReprendre" class="chip">Reprendre</button>
   <button id="mnSon" class="chip">Son : activé</button>
+  <button id="mnVoix" class="chip">Voix : parlées</button>
   <button id="mnRecommencer" class="chip">Recommencer le voyage</button>
   <div class="mnAide" id="mnAide"></div>
-  <p class="mnVer">HDF : TRAIN · v1.1 · l’enquête · moteur HDF BASE 1.0</p>
+  <p class="mnVer">HDF : TRAIN · v1.2 · l’enquête · voix de synthèse · moteur HDF BASE 1.0</p>
 </div></div>
 <div id="accueil"><div class="acBoite">
-  <h1>HDF <span>:</span> TRAIN</h1><p class="acVer">Version 1.1 · l’enquête</p>
+  <h1>HDF <span>:</span> TRAIN</h1><p class="acVer">Version 1.2 · l’enquête</p>
   <p class="acPitch">Un billet aller simple, sans gare d’arrivée. Une place côté fenêtre, voiture 1. Six inconnus, un contrôleur. Cette nuit, l’un d’eux va mourir dans les toilettes, et un autre l’aura tué. À six heures, le train s’arrêtera pour la première fois.</p>
   <p class="acVer" id="acBoucle"></p>
   <div class="acBoutons"><button id="acJouer" class="chip">Monter à bord</button></div>
@@ -6019,7 +6020,7 @@ const clamp = (x, a, b) => x < a ? a : x > b ? b : x;
 const lisse = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
 const $ = id => document.getElementById(id);
 const touch = matchMedia('(pointer:coarse)').matches || navigator.maxTouchPoints > 1;
-const HDF_VERSION = 'TRAIN 1.1';
+const HDF_VERSION = 'TRAIN 1.2';
 
 // ---------------------------------------------------------------- hachage entier (identique en JS et dans le shader du sol) et bruit de valeur périodique
 const hu = (x, y) => { let h = (Math.imul(x | 0, 1597334677) ^ Math.imul(y | 0, 3812015801 | 0)) >>> 0; h = (h ^ (h >>> 16)) >>> 0; h = Math.imul(h, 2246822519 | 0) >>> 0; h = (h ^ (h >>> 13)) >>> 0; return h; };
@@ -6753,7 +6754,7 @@ function ecrireDialogue(qui, sous, texte, choix) {
   DIALOGUE.choix = choix; GP.sel = 0; surligner();
   $('dlAide').innerHTML = touch && !GP.actif ? '' : '<span><i style="color:#8fb4ff">✕</i>Choisir<kbd>Entrée</kbd></span><span><i style="color:#ff8fa8">○</i>Partir<kbd>Échap</kbd></span>';
 }
-function majDialogueVoyageur(a, texte) { ecrireDialogue(a.connu ? a.p.prenom + ' ' + a.p.nom : accord(a.p, 'Voyageur', 'Voyageuse'), a.connu ? a.p.metier : '', texte, sujets(a).map(([c, l]) => [c, l, choisir])); }
+function majDialogueVoyageur(a, texte) { parler(a.p, texte, 2); ecrireDialogue(a.connu ? a.p.prenom + ' ' + a.p.nom : accord(a.p, 'Voyageur', 'Voyageuse'), a.connu ? a.p.metier : '', texte, sujets(a).map(([c, l]) => [c, l, choisir])); }
 function ouvrirDialogue(a) {
   DIALOGUE.ouvert = true; DIALOGUE.a = a; DIALOGUE.sac = false;
   if (!a.dort) a.c.play(a.ly > FL + .05 ? 'Sit_Talk' : 'Talk', { fade: .3 });
@@ -6782,7 +6783,7 @@ function manger(c) {
   if (c === 'l') { B.calme = Math.min(100, B.calme + 10); B.moral = Math.min(100, B.moral + 4); HORLOGE.min += 20; ecrireSac('Vous lisez quelques pages. Vingt minutes ont passé. Dehors, le paysage a changé.'); }
   majAffichageBesoins(true);
 }
-function fermerDialogue(force) { if (ENQ.confront && !force) return; const a = DIALOGUE.a; DIALOGUE.ouvert = false; DIALOGUE.a = null; DIALOGUE.sac = false; $('dialogue').hidden = true; if (a && !a.dort && !a.mort) { if (a.ly > FL + .05) a.c.play(a.clip, { fade: .3 }); else a.c.play('Idle', { fade: .3 }); } }
+function fermerDialogue(force) { if (ENQ.confront && !force) return; if (VOIX.prio >= 2) arreterVoix(); const a = DIALOGUE.a; DIALOGUE.ouvert = false; DIALOGUE.a = null; DIALOGUE.sac = false; $('dialogue').hidden = true; if (a && !a.dort && !a.mort) { if (a.ly > FL + .05) a.c.play(a.clip, { fade: .3 }); else a.c.play('Idle', { fade: .3 }); } }
 addEventListener('keydown', e => { if (!DIALOGUE.ouvert) return; const n = parseInt(e.key, 10), S = DIALOGUE.choix || [];
   if (e.code === 'ArrowDown' || e.code === 'KeyS' || e.code === 'ArrowUp' || e.code === 'KeyW') { e.preventDefault(); e.stopImmediatePropagation(); const d = e.code === 'ArrowDown' || e.code === 'KeyS' ? 1 : -1; GP.sel = (GP.sel + d + S.length) % S.length; surligner(); return; }
   if (e.code === 'Enter' || e.code === 'Space' || (e.code === 'KeyE' && !e.repeat)) { e.preventDefault(); e.stopImmediatePropagation(); const q = S[GP.sel % S.length]; if (q) q[2](q[0]); return; }
@@ -6798,14 +6799,14 @@ const CONVERS = {
   nuit: [['On ne voit plus rien dehors.', 'Seulement notre reflet. Je n’aime pas ça.'], ['Vous dormez ?', 'Non. Je n’y arrive pas.']],
   village: [['Encore un village. Personne dans les rues.', 'Ils sont tous à table.', 'Ou ailleurs.'], ['Je connais ce clocher. Enfin, je crois.', 'Ils se ressemblent tous.']] };
 const CAUSE = { t: 40 + Math.random() * 30, file: [], tl: 0 };
-function sousTitre(qui, txt, duree) { const el = $('sousTitre'); el.innerHTML = '<b>' + qui + '</b> ' + txt; el.hidden = false; CAUSE.sous = duree; }
+function sousTitre(qui, txt, duree, p) { parler(p || (qui === 'Le contrôleur' ? CONTROLEUR : null), txt, 1); const el = $('sousTitre'); el.innerHTML = '<b>' + qui + '</b> ' + txt; el.hidden = false; CAUSE.sous = duree; }
 function majConversations(dt) {
   const [a, b] = PASSAGERS.liste; if (!a || !b) return;
   if (CAUSE.sous > 0 && (CAUSE.sous -= dt) <= 0) $('sousTitre').hidden = true;
   if (ENQ.lance) { CAUSE.file = []; return; }
   const nuit = HORLOGE.min / 60 >= 23.5 || HORLOGE.min / 60 < 5.5; a.dort = b.dort = false;
   if (nuit) { const d = hf(HORLOGE.jour, a.p.id.charCodeAt(2)) < .5; if (d !== a.dortN) { a.dortN = d; a.c.play(d ? 'Sit_Idle' : a.clip, { fade: .5 }); } a.dort = d; }
-  if (CAUSE.file.length) { if ((CAUSE.tl -= dt) <= 0) { const [qui, txt] = CAUSE.file.shift(); if (DIALOGUE.a !== qui) { sousTitre(nomDe(qui), txt, 4.2); qui.c.play('Sit_Talk', { fade: .3 }); const o = qui === a ? b : a; if (DIALOGUE.a !== o) o.c.play(o.dort ? 'Sit_Idle' : o.clip === 'Read_Sit' ? 'Sit_Chair' : o.clip, { fade: .4 }); } CAUSE.tl = 4.4; if (!CAUSE.file.length) setTimeout(() => { for (const q of [a, b]) if (DIALOGUE.a !== q) q.c.play(q.dort ? 'Sit_Idle' : q.clip, { fade: .5 }); }, 4300); } return; }
+  if (CAUSE.file.length) { if ((CAUSE.tl -= dt) <= 0) { const [qui, txt] = CAUSE.file.shift(); if (DIALOGUE.a !== qui) { sousTitre(nomDe(qui), txt, 4.2, qui.p); qui.c.play('Sit_Talk', { fade: .3 }); const o = qui === a ? b : a; if (DIALOGUE.a !== o) o.c.play(o.dort ? 'Sit_Idle' : o.clip === 'Read_Sit' ? 'Sit_Chair' : o.clip, { fade: .4 }); } CAUSE.tl = 4.4; if (!CAUSE.file.length) setTimeout(() => { for (const q of [a, b]) if (DIALOGUE.a !== q) q.c.play(q.dort ? 'Sit_Idle' : q.clip, { fade: .5 }); }, 4300); } return; }
   if ((CAUSE.t -= dt) > 0 || DIALOGUE.ouvert || HORLOGE.k > 1 || !$('accueil').hidden) return; CAUSE.t = 55 + Math.random() * 70;
   if (a.dort && b.dort) return;
   const v = prochainVillage(), pres = v && Math.abs(v.uc - ROUTE.u) < 500, cle = nuit || A.nuit() > .6 ? 'nuit' : pres && Math.random() < .6 ? 'village' : Math.random() < .65 ? regionIci() : 'tout';
@@ -6868,7 +6869,7 @@ $('bCarnet').onclick = () => basculerCarnet(); $('cnFermer').onclick = () => bas
 addEventListener('keydown', e => { if (e.code === 'Escape' && !$('lettre').hidden) { $('lettre').hidden = true; e.stopImmediatePropagation(); return; } if (e.code === 'KeyJ' && !DIALOGUE.ouvert && $('accueil').hidden && !CINE.actif) basculerCarnet(); if (e.code === 'Escape' && !$('carnet').hidden) basculerCarnet(false); });
 function basculerMenu(ouvrir) {
   const m = $('menu'), o = ouvrir ?? m.hidden; if (o && !$('accueil').hidden) return;
-  m.hidden = !o; A.skipUpdate = !!o; $('bMenu').setAttribute('aria-pressed', !!o); $('mnSon').textContent = 'Son : ' + (SON.coupe ? 'coupé' : 'activé'); GP.sel = 0;
+  m.hidden = !o; A.skipUpdate = !!o; if (o) arreterVoix(); majBoutonVoix(); $('bMenu').setAttribute('aria-pressed', !!o); $('mnSon').textContent = 'Son : ' + (SON.coupe ? 'coupé' : 'activé'); GP.sel = 0;
   if (o) $('mnAide').innerHTML = touch ? '<b>Pouce gauche</b> marcher · <b>glisser</b> regarder<br><b>Bouton</b> agir · <b>État</b> et <b>Carnet</b> en haut à droite' : '<b>ZQSD</b> marcher · <b>Maj</b> courir · <b>glisser</b> regarder<br><b>E</b> agir · <b>B</b> état · <b>J</b> carnet · <b>Échap</b> menu<br><b>Manette</b> : stick gauche marcher, stick droit regarder, Croix agir, Carré état, Triangle carnet, Options menu';
   else cv.focus({ preventScroll: true });
   if (SON.ctx) try { o ? SON.ctx.suspend() : SON.ctx.resume(); } catch (e) {}
@@ -6922,8 +6923,96 @@ function majSon(dt) {
   const cp = CROISE.proche || 0; SON.croise.g.gain.setTargetAtTime(cp * cp * 1.1 * dort, t, .08); SON.croise.fl.frequency.setTargetAtTime(500 + 900 * cp, t, .2);
   if (!Cm.assis && ETAT.vitesse > .5) { SON.pasT -= dt; if (SON.pasT <= 0) { SON.pasT = ETAT.vitesse > 2 ? .34 : .55; pasPlancher(); } }
 }
-function sonCoupe(c) { SON.coupe = c; try { if (SON.maitre) SON.maitre.gain.setTargetAtTime(c ? 0 : SON.volume, SON.ctx.currentTime, .1); } catch (e) {} try { localStorage.setItem('hdf-voyage-son', c ? '0' : '1'); } catch (e) {} }
+function sonCoupe(c) { SON.coupe = c; if (c) arreterVoix(); try { if (SON.maitre) SON.maitre.gain.setTargetAtTime(c ? 0 : SON.volume, SON.ctx.currentTime, .1); } catch (e) {} try { localStorage.setItem('hdf-voyage-son', c ? '0' : '1'); } catch (e) {} }
 try { SON.coupe = localStorage.getItem('hdf-voyage-son') === '0'; } catch (e) {}
+
+// =====================================================================================
+//  1.2 — VOIX DE SYNTHÈSE (repris d'HDF : ENCLOS 1.1.3, version corrigée)
+//  Chaque personnage a sa voix : une voix française de l'appareil du bon sexe, une hauteur et un débit tirés de son âge et de son identifiant (toujours les mêmes).
+//  · Branché sur les répliques des personnages seulement : dialogue avec un voyageur, réponses en confrontation, conversations des voisins et du contrôleur (sous-titres).
+//    Ni les descriptions, ni les documents, ni le sac, ni les questions du joueur, ni l'interface. Plafond 220 caractères (coupé à la fin d'une phrase).
+//  · Une seule réplique à la fois, dans une file (le dialogue avec le joueur passe avant ; une conversation voisine trop ancienne, plus de 8 s, est abandonnée).
+//  · Jamais « cancel » puis « speak » dans la même image (180 ms d'écart, sinon Safari perd la réplique) ; garde-fou si une réplique ne finit pas.
+//  · Déblocage au premier toucher / clic / touche ; si le navigateur refuse (« not-allowed », pas encore de geste), la réplique est gardée et redite au geste suivant.
+//  · Menu · « Voix : parlées / bruitage / muettes » (mémorisé : hdf-train-voix). Son coupé = pas de voix. Onglet caché ou menu ouvert = voix arrêtées.
+// =====================================================================================
+const VOIX = { mode: 'synthese', liste: [], gen: 0, file: [], u: null, prio: 0, limite: 0, pause: 0, debloque: false, bloque: false, refus: 0, essai: 0, avert: 0, cache: new Map() };
+try { const m = localStorage.getItem('hdf-train-voix'); if (m === 'synthese' || m === 'bruitage' || m === 'muet') VOIX.mode = m; } catch (e) {}
+const SS = self.speechSynthesis || null;
+const VF = /(am[ée]lie|audrey|aur[ée]lie|marie|julie|hortense|denise|c[ée]line|virginie|sandy|shelley|grandma|\bflo\b|chantal|sylvie|[ée]lo[iï]se|vivienne|brigitte|coralie|jos[ée]phine|yvette|ariane|charline|jacqueline|c[ée]leste|\bl[ée]a\b|manon|oc[ée]ane|pauline|agn[èe]s|claire|female|femme|google fran|x-fr[ac]-)/i;
+const VM = /(thomas|daniel|nicolas|\bpaul\b|henri|claude|jacques|eddy|grandpa|\breed\b|rocko|r[ée]m[iy]|antoine|mathieu|guillaume|alain|\bjean\b|fabrice|olivier|maxime|j[ée]r[ôo]me|\byves\b|louis|vincent|arnaud|s[ée]bastien|thierry|g[ée]rard|\bmale\b|homme|x-fr[bd]-)/i;
+const FANTAISIE = /bad news|bells|bubbles|jester|organ|whisper|zarvox|trinoids|albert|bahh|boing|cellos|superstar|wobble|good news|junior|ralph|kathy|fred/i;
+const genreVoix = v => !v ? '?' : VF.test(v.name) ? 'F' : VM.test(v.name) ? 'M' : '?';
+function chargerVoix() { if (!SS) return; let L = []; try { L = SS.getVoices() || []; } catch (e) {} const n0 = VOIX.liste.length;
+  VOIX.liste = L.filter(v => /^fr/i.test(v.lang) && !FANTAISIE.test(v.name)).sort((a, b) => (/fr[-_]FR/i.test(b.lang) - /fr[-_]FR/i.test(a.lang)) || (/premium|enhanced|amélior|natural|neural/i.test(b.name) - /premium|enhanced|amélior|natural|neural/i.test(a.name)) || (b.localService - a.localService));
+  if (VOIX.liste.length !== n0) { VOIX.gen++; VOIX.cache.clear(); } try { majBoutonVoix(); } catch (e) {} }
+function choisirVoix(sexe, age, h) {   // une voix du bon sexe ; sinon une voix de genre inconnu ; sinon (dernier recours) l'autre, fortement transposée
+  const L = VOIX.liste, ok0 = L.filter(v => genreVoix(v) === sexe), okFR = ok0.filter(v => /fr[-_]FR/i.test(v.lang)), ok = okFR.length ? okFR : ok0, inconnues = L.filter(v => genreVoix(v) === '?');
+  if (ok.length) { const vieux = age > 64 && ok.filter(v => /grandma|grandpa/i.test(v.name)), jeunes = ok.filter(v => !/grandma|grandpa/i.test(v.name)), P = vieux && vieux.length ? vieux : jeunes.length ? jeunes : ok; return { v: P[(h >>> 7) % P.length], g: 'ok' }; }
+  if (inconnues.length) return { v: inconnues[(h >>> 7) % inconnues.length], g: '?' };
+  return { v: L.length ? L[(h >>> 7) % L.length] : null, g: 'autre' };
+}
+if (SS) { chargerVoix(); try { if (SS.addEventListener) SS.addEventListener('voiceschanged', chargerVoix); else SS.onvoiceschanged = chargerVoix; } catch (e) {} }
+const voixDispo = () => !!SS && VOIX.liste.length > 0;
+const hashV = s => { let h = 2166136261; for (const ch of String(s)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
+function profilVoix(p) {
+  if (!p || !p.id) return null; const k = p.id + '·' + VOIX.gen; if (VOIX.cache.has(k)) return VOIX.cache.get(k);
+  const h = hashV(p.id), F = p.sexe === 'F', age = p.age || 40, c = choisirVoix(F ? 'F' : 'M', age, h); let pitch = 1 + ((h >>> 11) % 13 - 6) * .018;
+  if (c.g === '?') pitch *= F ? 1.18 : .82; else if (c.g === 'autre') pitch *= F ? 1.45 : .6;   // jamais une voix de l'autre sexe à hauteur normale
+  if (age > 60) pitch *= .93; if (age < 25) pitch *= 1.05;
+  const vit = (age > 62 ? 1.01 : age < 30 ? 1.08 : 1.045) * (1 + ((h >>> 4) % 7 - 3) * .012);
+  const r = { voix: c.v, pitch: Math.max(.5, Math.min(1.9, pitch)), rate: Math.max(1, Math.min(1.1, vit)), base: F ? 215 + h % 55 - Math.max(0, age - 50) * 1.2 : 112 + h % 38 - Math.max(0, age - 50) * .6, formant: F ? 1500 + h % 400 : 1050 + h % 300 };
+  VOIX.cache.set(k, r); return r;
+}
+function nettoyerVoix(t) { return String(t || '').replace(/\([^)]*\)/g, ' ').replace(/[«»“”"]/g, '').replace(/…/g, ', ').replace(/\s*—\s*/g, ', ').replace(/\bZzz\b/gi, '').replace(/\s+/g, ' ').replace(/^[\s,.;:!?]+/, '').trim(); }
+function plafond(t, n) { if (t.length <= n) return t; const c = t.slice(0, n), i = Math.max(c.lastIndexOf('. '), c.lastIndexOf('! '), c.lastIndexOf('? ')); return i > 40 ? c.slice(0, i + 1) : ''; }   // trop long : coupé à la fin d'une phrase (sinon pas dit)
+// ---- une réplique : synthèse vocale, ou bruitage (une petite voix d'oscillateur au rythme des syllabes)
+function parler(p, txt, prio) {
+  if (!p || VOIX.mode === 'muet' || SON.coupe) return; const dit = plafond(nettoyerVoix(txt), 220); if (!dit || !/[a-zà-ÿ0-9]/i.test(dit)) return; const prof = profilVoix(p); if (!prof) return;
+  if (VOIX.mode === 'synthese' && voixDispo()) dire(dit, prof, prio); else bruitage(dit, prof);
+}
+function bruitage(texte, prof) {
+  if (!sonPret() || SON.coupe) return; const C = SON.ctx, t0 = C.currentTime + .02, o = C.createOscillator(), f = C.createBiquadFilter(), g = C.createGain(); let t = t0, n = 0;
+  o.type = 'triangle'; f.type = 'bandpass'; f.Q.value = 1.1; f.frequency.value = prof.formant; g.gain.value = 0; o.connect(f).connect(g).connect(SON.bus.evt);
+  for (const ch of texte.slice(0, 160)) { t += 1 / 15; if (!/[aeiouyéèêëàâîïôûù]/i.test(ch)) continue; if (n++ > 60) break;
+    o.frequency.setTargetAtTime(prof.base * (1 + (Math.random() - .5) * .14) * (/[!?]/.test(ch) ? 1.12 : 1), t, .012); g.gain.setTargetAtTime(.22, t, .007); g.gain.setTargetAtTime(0, t + .05, .018); }
+  o.start(t0); o.stop(t + .3);
+}
+function dire(texte, prof, prio) {
+  if (!SS || !texte) return; const now = performance.now();
+  if (prio >= 2) { VOIX.file = []; if (VOIX.u) { VOIX.u = null; try { SS.cancel(); } catch (e) {} VOIX.pause = now + 180; } }   // le joueur parle à quelqu'un : la nouvelle réplique remplace l'ancienne
+  else if (VOIX.prio >= 2 && DIALOGUE.ouvert) return;                                           // pendant un dialogue, les conversations voisines ne sont pas dites
+  if (VOIX.file.length > 2) VOIX.file.splice(0, VOIX.file.length - 2); VOIX.file.push({ texte, prof, prio, t: now });
+}
+function parlerSuivant(geste) {   // « geste » : appelé dans un toucher / clic / touche (la réplique est alors dite dans le geste même : déblocage sûr sur iOS)
+  const now = performance.now(); if (!SS) return false;
+  if (VOIX.u) { if (now > VOIX.limite) { VOIX.u = null; try { SS.cancel(); } catch (e) {} VOIX.pause = now + 250; } return false; }   // garde-fou : une réplique qui ne finit pas
+  if (now < VOIX.pause || document.hidden) return false; if (VOIX.bloque && !geste && now < VOIX.essai) return false;
+  const e = VOIX.file.shift(); if (!e) return false; if (e.prio < 2 && now - e.t > 8000) return false;
+  if (VOIX.mode !== 'synthese' || SON.coupe || !voixDispo()) return false;
+  const u = new SpeechSynthesisUtterance(e.texte); u.lang = (e.prof.voix && e.prof.voix.lang) || 'fr-FR'; if (e.prof.voix) u.voice = e.prof.voix; u.pitch = e.prof.pitch; u.rate = e.prof.rate; u.volume = Math.max(.1, Math.min(1, SON.volume ?? 1));
+  const fin = ev => { if (VOIX.u !== u) return; VOIX.u = null; const err = ev && ev.type === 'error' ? ev.error || 'inconnue' : '';   // nos annulations ont déjà retiré VOIX.u : elles n'arrivent jamais ici
+    if (err === 'not-allowed') { VOIX.bloque = true; VOIX.debloque = false; VOIX.essai = performance.now() + 2000; VOIX.refus++; if ((e.essais || 0) < 6) { e.essais = (e.essais || 0) + 1; VOIX.file.unshift(e); }
+      if (VOIX.refus >= 3 && performance.now() > VOIX.avert) { VOIX.avert = performance.now() + 30000; notifier('Touchez l’écran pour activer les voix.'); } return; }
+    if ((err === 'interrupted' || err === 'canceled') && !e.rejoue) { e.rejoue = true; e.t = performance.now(); VOIX.file.unshift(e); VOIX.pause = performance.now() + 220; return; }   // interrompue par l'appareil : redite une fois
+    if (!err) { VOIX.refus = 0; VOIX.bloque = false; } VOIX.pause = performance.now() + 140; };
+  u.onstart = () => { VOIX.refus = 0; VOIX.bloque = false; VOIX.debloque = true; };
+  u.onend = fin; u.onerror = fin; VOIX.u = u; VOIX.prio = e.prio; VOIX.limite = now + (e.texte.length / (13 * u.rate)) * 2200 + 4000;
+  try { SS.speak(u); } catch (err) { VOIX.u = null; return false; } return true;
+}
+setInterval(() => { try { parlerSuivant(); } catch (e) { VOIX.u = null; } }, 90);
+function arreterVoix() { VOIX.file.length = 0; if (VOIX.u) { VOIX.u = null; try { SS.cancel(); } catch (e) {} VOIX.pause = performance.now() + 180; } }
+function gesteSon() {   // le geste qui débloque : la réplique en attente est dite tout de suite ; sinon un « . » muet (une espace seule est ignorée par certains moteurs)
+  if (!SS || VOIX.mode !== 'synthese' || (VOIX.debloque && !VOIX.bloque)) return; VOIX.debloque = true; VOIX.bloque = false; VOIX.essai = 0; let ok = false;
+  if (VOIX.file.length && !VOIX.u && !SON.coupe && voixDispo() && performance.now() >= VOIX.pause) { try { ok = parlerSuivant(true); } catch (e) { ok = false; } }
+  if (!ok) { try { const u = new SpeechSynthesisUtterance('.'); u.volume = 0; u.rate = 2; u.lang = 'fr-FR'; SS.speak(u); } catch (e) {} VOIX.pause = Math.max(VOIX.pause, performance.now() + 120); }
+}
+for (const ev of ['touchend', 'click', 'keydown', 'mouseup']) addEventListener(ev, gesteSon, { passive: true, capture: true });
+document.addEventListener('visibilitychange', () => { if (document.hidden) arreterVoix(); });
+function majBoutonVoix() { const b = $('mnVoix'); if (b) b.textContent = 'Voix : ' + ({ synthese: voixDispo() ? 'parlées' : 'parlées (aucune voix française : bruitage)', bruitage: 'bruitage', muet: 'muettes' }[VOIX.mode]); }
+function basculerVoix() { const O = ['synthese', 'bruitage', 'muet']; VOIX.mode = O[(O.indexOf(VOIX.mode) + 1) % 3]; arreterVoix(); try { localStorage.setItem('hdf-train-voix', VOIX.mode); } catch (e) {} if (VOIX.mode === 'synthese') { VOIX.debloque = false; gesteSon(); } majBoutonVoix(); }
+$('mnVoix').onclick = () => { sonReveil(); basculerVoix(); };
+majBoutonVoix();
 
 // =====================================================================================
 //  MANETTE (PS4 et toute manette au format standard) — mêmes boutons que HDF
@@ -7440,7 +7529,7 @@ function ouvrirConfrontation(a) {
   ENQ.confront = { a, q: 0, credit: 3, ok: 0, Q: questions(a.p) }; DIALOGUE.ouvert = true; DIALOGUE.a = a; DIALOGUE.sac = false; $('dialogue').hidden = false; a.c.play('Idle', { fade: .3 }); poserQuestion();
 }
 function poserQuestion(rep) {
-  const C = ENQ.confront, a = C.a, Q = C.Q[C.q], cr = '●'.repeat(C.credit) + '○'.repeat(3 - C.credit);
+  const C = ENQ.confront, a = C.a, Q = C.Q[C.q], cr = '●'.repeat(C.credit) + '○'.repeat(3 - C.credit); if (rep) parler(a.p, rep, 2);   // 1.2 : la réponse du suspect est dite (pas la question)
   ecrireDialogue(nomComplet(a.p), 'Crédibilité ' + cr + ' · question ' + (C.q + 1) + ' / 4', (rep ? rep + ' — ' : '') + Q.q, ENQ.indices.map(i => [i.id, i.nom, repondreQ]).concat([['rien', 'Je n’ai pas de preuve', repondreQ]]));
 }
 function repondreQ(id) {
@@ -7448,7 +7537,7 @@ function repondreQ(id) {
   if (bon) { C.ok++; rep = ['Je… Ce n’est pas ce que vous croyez.', 'Vous ne savez rien de ce qui s’est passé.', 'Taisez-vous.', '…'][C.q]; a.c.play('Hit_Back', { fade: .2 }); setTimeout(() => a.c.play('Idle', { fade: .4 }), 900); }
   else { C.credit--; rep = a.p === AFF.coupable ? 'Ça ne prouve rien du tout.' : 'C’est ridicule. Je n’ai rien fait, et vous le savez.'; }
   C.q++;
-  if (C.credit <= 0 || C.q >= 4) { const juste = a.p === AFF.coupable, gagne = juste && C.credit > 0 && C.ok >= 3; ENQ.fin = !juste ? 'erreur' : gagne ? 'juste' : 'doute'; majDialogueTexte(rep); setTimeout(() => { fermerDialogue(true); ENQ.confront = null; finir_('confrontation'); denouement(); }, 1600); return; }
+  if (C.credit <= 0 || C.q >= 4) { const juste = a.p === AFF.coupable, gagne = juste && C.credit > 0 && C.ok >= 3; ENQ.fin = !juste ? 'erreur' : gagne ? 'juste' : 'doute'; parler(a.p, rep, 2); majDialogueTexte(rep); setTimeout(() => { fermerDialogue(true); ENQ.confront = null; finir_('confrontation'); denouement(); }, 1600); return; }
   poserQuestion(rep);
 }
 function majDialogueTexte(t) { $('dlTexte').textContent = t; $('dlChoix').innerHTML = ''; }
@@ -7652,7 +7741,7 @@ A.onBeforeRender(() => { if (ENQ.noir) return; const n = A.nuit(), e = A.camera.
 texteAide();
 $('acBoucle').textContent = MEMOIRE.boucle > 1 ? 'Boucle ' + MEMOIRE.boucle + ' · vous vous souvenez des nuits précédentes' : '';
 if (MEMOIRE.boucle > 1) $('acJouer').textContent = 'Remonter à bord · boucle ' + MEMOIRE.boucle;
-self.HDF = { A, Cm, ROUTE, SON, GP, PASSAGERS, BESOINS, HORLOGE, quitterAccueil, recaler, village, regionIci, versMonde, TRONCONS, VILLAGES, boutonManette, basculerMenu,
+self.HDF = { VOIX, parler: (p, t, k) => parler(p, t, k), profilVoix: p => profilVoix(p), arreterVoix: () => arreterVoix(), sousTitre: (a, b, c, d) => sousTitre(a, b, c, d), ouvrirDialogue: a => ouvrirDialogue(a), choisir: k => choisir(k), fermerDialogue: f => fermerDialogue(f), DIALOGUE, CONTROLEUR, sonCoupe: c => sonCoupe(c), A, Cm, ROUTE, SON, GP, PASSAGERS, BESOINS, HORLOGE, quitterAccueil, recaler, village, regionIci, versMonde, TRONCONS, VILLAGES, boutonManette, basculerMenu,
   ENQ, AFF, ETAPES, fermerDialogue: f => fermerDialogue(f), CINE, MEMOIRE, lancerEnquete, passerCine, actionDispo: () => actionDispo(), fait, finir_, sequenceForcer, sequenceAnnonce, sequenceTemoin, sequencePoursuite, sequenceReunion, denouement, second, acteurDe, ouvrirDialogue, choisir, presenter, fouiller, ouvrirValise, ecouterRadio, reconstituer, repondreQ, objectifs, carnetEnquete, brancherCarnet, zoneDe, majCarnet, basculerCarnet, CONTROLEUR, METHODES };
 self.HDF_VERSION = HDF_VERSION;
 })();
