@@ -1,4 +1,4 @@
-<title>HDF TRAIN 1.2</title>
+<title>HDF TRAIN 1.3</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap">
@@ -155,6 +155,25 @@ body.carnet-ouvert #act{display:none!important}
 .acPitch{margin:0;font:500 italic 19px/1.5 "Cormorant Garamond",Georgia,serif;color:#cfc6b4}
 .acBoutons{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.acBoutons .chip{min-height:46px;padding:12px 20px;font-size:16px}
 #acJouer{background:var(--amber);color:#1a1206;border-color:var(--amber)}
+/* 1.3 : menu principal, emplacements de sauvegarde, reprise, quitter */
+.acPanneau{display:grid;gap:9px;width:min(340px,100%);margin:2px auto 0}.acPanneau .chip{justify-content:center;display:grid;gap:3px;text-align:center}
+.acPanneau .chip small,.slot small{display:block;font:500 11.5px/1.25 var(--f-b);color:var(--dim);letter-spacing:.02em;text-transform:none}
+.acPrim,#acJouer{background:var(--amber)!important;color:#1a1206!important;border-color:var(--amber)!important}.acPrim small{color:#3a2a10!important}
+.acPanneau .chip.off,.slot.off{opacity:.42;cursor:default}
+.acErreur{margin:0;padding:8px 12px;border:1px solid rgba(232,72,62,.45);border-radius:8px;background:rgba(232,72,62,.08);font:500 13.5px/1.4 var(--f-b);color:#f2c9c4}
+@media (max-height:620px){.acBoite{gap:9px}.acBoite h1{font-size:clamp(34px,7vh,52px)}.acPitch{display:none}.acPanneau .chip{min-height:42px}}
+#slots{position:fixed;inset:0;z-index:45;background:rgba(4,6,9,.72);display:grid;place-items:center;padding:16px;overflow-y:auto}
+.slBoite{width:min(440px,100%);box-sizing:border-box;padding:18px;display:grid;gap:10px}.slBoite h2{margin:0 0 4px;font:700 20px/1.1 var(--f-d);letter-spacing:.06em;text-transform:uppercase;text-align:center;color:var(--ink)}
+.slBoite > .chip{justify-content:center;min-height:46px;font-size:15px}
+.slot{display:grid!important;gap:3px;justify-items:start;text-align:left;padding:12px 14px!important;min-height:64px;font:500 14px/1.3 var(--f-b)!important;letter-spacing:0!important;text-transform:none!important;color:var(--ink)!important}
+.slot b{font:700 13px/1 var(--f-d);letter-spacing:.1em;text-transform:uppercase;color:var(--amber)}.slot i{color:var(--dim)}.slot.conf{border-color:#e05a4a!important}.slot.conf b{color:#ff7a68}
+#reprise{position:fixed;inset:0;z-index:46;background:radial-gradient(ellipse at 50% 30%,#1b1f26,#050607 75%);display:grid;place-items:center;padding:20px;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+#reprise>div{display:grid;gap:14px;text-align:center;max-width:520px}#reprise h2,#quitte h2{margin:0;font:700 clamp(30px,6vw,54px)/1 var(--f-d);letter-spacing:.06em;color:var(--ink)}#reprise h2 span,#quitte h2 span{color:var(--amber)}#reprise p,#quitte p{margin:0;font:500 15px/1.45 var(--f-b);color:var(--dim)}
+#reprise .chip,#quitte .chip{justify-self:center;justify-content:center;min-height:52px;padding:12px 26px;font-size:17px}#rpBouton{background:var(--amber);color:#1a1206;border-color:var(--amber)}#reprise .chip:disabled{opacity:.5}
+#quitte{position:fixed;inset:0;z-index:60;background:#050607;display:grid;place-items:center;text-align:center;padding:20px}#quitte>div{display:grid;gap:14px}
+#svInd{position:fixed;left:14px;bottom:calc(var(--sb, 0px) + 14px);z-index:8;padding:6px 10px;font:600 11px/1 var(--f-d);letter-spacing:.14em;text-transform:uppercase;color:var(--dim);opacity:0;transition:opacity .6s;pointer-events:none}#svInd.on{opacity:1}
+#menu{overflow-y:auto}.mnBoite .chip.conf{border-color:#e05a4a;color:#ffb0a6}#mnEtat{margin:0;font:500 12.5px/1.35 var(--f-b);color:var(--dim);text-align:center}
+@media (max-height:700px){.mnBoite{gap:7px;padding:14px}.mnBoite .chip{min-height:40px}}
 .acAide{margin:0;font:500 13px/1.5 var(--f-b);color:var(--dim)}.acAide b{color:var(--ink);font-weight:600}
 #stick{position:fixed;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:2px solid rgba(255,255,255,.25);background:rgba(8,13,20,.25);pointer-events:none}
 #stick i{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(255,179,64,.75)}
@@ -237,19 +256,31 @@ body:not(.cine) #cineSous{display:none}
 <div id="menu" hidden role="dialog" aria-label="Menu"><div class="gl mnBoite">
   <h2>Pause</h2>
   <button id="mnReprendre" class="chip">Reprendre</button>
+  <button id="mnSauver" class="chip">Sauvegarder</button>
+  <button id="mnCharger" class="chip">Charger une partie</button>
   <button id="mnSon" class="chip">Son : activé</button>
   <button id="mnVoix" class="chip">Voix : parlées</button>
   <button id="mnRecommencer" class="chip">Recommencer le voyage</button>
+  <button id="mnMenuPrincipal" class="chip">Menu principal</button>
+  <button id="mnQuitter" class="chip">Quitter le jeu</button>
+  <p id="mnEtat"></p>
   <div class="mnAide" id="mnAide"></div>
-  <p class="mnVer">HDF : TRAIN · v1.2 · l’enquête · voix de synthèse · moteur HDF BASE 1.0</p>
+  <p class="mnVer">HDF : TRAIN · v1.3 · l’enquête · voix de synthèse · 3 sauvegardes · moteur HDF BASE 1.0</p>
 </div></div>
 <div id="accueil"><div class="acBoite">
-  <h1>HDF <span>:</span> TRAIN</h1><p class="acVer">Version 1.2 · l’enquête</p>
+  <h1>HDF <span>:</span> TRAIN</h1><p class="acVer">Version 1.3 · l’enquête · sauvegardes</p>
   <p class="acPitch">Un billet aller simple, sans gare d’arrivée. Une place côté fenêtre, voiture 1. Six inconnus, un contrôleur. Cette nuit, l’un d’eux va mourir dans les toilettes, et un autre l’aura tué. À six heures, le train s’arrêtera pour la première fois.</p>
   <p class="acVer" id="acBoucle"></p>
-  <div class="acBoutons"><button id="acJouer" class="chip">Monter à bord</button></div>
+  <p class="acErreur" id="acErreur" hidden></p>
+  <div id="acMain" class="acBoutons acPanneau"><button id="acContinuer" class="chip acPrim" hidden>Continuer</button><button id="acNouvelle" class="chip">Nouvelle partie</button><button id="acCharger" class="chip">Charger une partie</button><button id="acOptions" class="chip">Options</button><button id="acQuitter" class="chip">Quitter</button></div>
+  <div id="acPanOptions" class="acBoutons acPanneau" hidden><button id="acOptSon" class="chip">Son : activé</button><button id="acOptVoix" class="chip">Voix : parlées</button><button id="acRetour" class="chip">Retour</button></div>
+  <div id="acPanBord" class="acBoutons acPanneau" hidden><button id="acJouer" class="chip">Monter à bord</button><button id="acAuMenu" class="chip">Menu principal</button></div>
   <p class="acAide" id="acAide"></p>
 </div></div>
+<div id="reprise" hidden role="dialog" aria-label="Reprendre la partie"><div><h2>HDF <span>:</span> TRAIN</h2><p id="rpInfo">Chargement de la partie…</p><button id="rpBouton" class="chip">Reprendre la partie</button><p id="rpAide">Touchez l’écran, cliquez ou appuyez sur une touche pour reprendre (les voix ont besoin d’un geste).</p></div></div>
+<div id="slots" hidden role="dialog" aria-label="Sauvegardes"><div class="gl slBoite"><h2 id="slTitre">Charger une partie</h2><button id="sl1" class="chip slot"></button><button id="sl2" class="chip slot"></button><button id="sl3" class="chip slot"></button><button id="slRetour" class="chip">Retour</button></div></div>
+<div id="quitte" hidden><div><h2>HDF <span>:</span> TRAIN</h2><p id="quTexte">Partie sauvegardée. Vous pouvez fermer cet onglet.</p><button id="quRetour" class="chip">Revenir au menu principal</button></div></div>
+<div id="svInd" class="gl" aria-live="polite"></div>
 <div id="carnet" class="gl" hidden role="dialog" aria-label="Carnet"><div class="cnTete"><span class="lbl">Carnet de voyage</span><button id="cnFermer" class="chip" aria-label="Fermer">×</button></div><div id="cnListe"></div></div>
 <div id="sommeil" hidden><div><p id="smTexte">Vous somnolez…</p><button id="smReveil" class="chip">Se réveiller</button></div></div>
 <div id="dialogue" hidden role="dialog" aria-live="polite"><div id="dlQui"></div><p id="dlTexte"></p><div id="dlChoix"></div><div id="dlAide"></div></div>
@@ -6020,7 +6051,16 @@ const clamp = (x, a, b) => x < a ? a : x > b ? b : x;
 const lisse = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
 const $ = id => document.getElementById(id);
 const touch = matchMedia('(pointer:coarse)').matches || navigator.maxTouchPoints > 1;
-const HDF_VERSION = 'TRAIN 1.2';
+const HDF_VERSION = 'TRAIN 1.3';
+// ---------------------------------------------------------------- 1.3 — SAUVEGARDES (1/2) : lues dès le démarrage, car l'affaire, les places des voyageurs et la position du train en dépendent
+// Une partie chargée = la même affaire (reconstruite à partir des identifiants sauvés, pas d'un tirage), les mêmes places et couleurs, puis tout l'état dynamique (voir etatPartie).
+const PARTIE = { slot: 0, cle: n => 'hdf-train-partie-' + n, mode: 'charger', confirme: 0, charge: false, demande: false, dernier: 0, zone: '', occupe: 0, erreur: '', etatCharge: null, conf: '' };
+var REPRISE = { actif: false, s: null };
+function lireSlot(n) { try { const s = JSON.parse(localStorage.getItem(PARTIE.cle(n)) || 'null'); return s && s.format === 1 && s.aff ? s : null; } catch (e) { return null; } }
+let CHARGE = null, NOUVELLE = 0;
+try { const n = +sessionStorage.getItem('hdf-train-charger'); sessionStorage.removeItem('hdf-train-charger'); if (n >= 1 && n <= 3) { CHARGE = lireSlot(n); if (CHARGE) PARTIE.slot = n; else PARTIE.erreur = 'L’emplacement ' + n + ' est vide ou illisible.'; } } catch (e) {}
+try { const n = +sessionStorage.getItem('hdf-train-nouvelle'); sessionStorage.removeItem('hdf-train-nouvelle'); if (!CHARGE && n >= 1 && n <= 3) { NOUVELLE = n; PARTIE.slot = n; } } catch (e) {}
+const bientot = ms => { PARTIE.occupe = Math.max(PARTIE.occupe, performance.now() + ms + 150); };   // un événement différé arrive : pas de sauvegarde avant
 
 // ---------------------------------------------------------------- hachage entier (identique en JS et dans le shader du sol) et bruit de valeur périodique
 const hu = (x, y) => { let h = (Math.imul(x | 0, 1597334677) ^ Math.imul(y | 0, 3812015801 | 0)) >>> 0; h = (h ^ (h >>> 16)) >>> 0; h = Math.imul(h, 2246822519 | 0) >>> 0; h = (h ^ (h >>> 13)) >>> 0; return h; };
@@ -6531,11 +6571,11 @@ function initPassagers() {
   const enFace = [PL.find(q => q.rang === SIEGE.rang + 1 && q.sg === SIEGE.sg && q.siege === 'fenetre'), PL.find(q => q.rang === SIEGE.rang + 1 && q.sg === SIEGE.sg && q.siege === 'couloir')];
   const libres = PL.filter(q => q.rang !== SIEGE.rang && q.rang !== SIEGE.rang + 1 && q.siege === 'fenetre' && !(q.rang === SIEGE.rang - 1 && q.sg === SIEGE.sg)).sort(() => R() - .5);
   L.forEach((p, k) => {
-    const place = k < 2 ? enFace[k] : libres[k];
+    const sp = CHARGE && CHARGE.places && CHARGE.places[p.id], place = (sp && PL.find(q => q.rang === sp.rang && q.sg === sp.sg && q.siege === sp.siege)) || (k < 2 ? enFace[k] : libres[k]);   // 1.3 : place sauvée
     const morph = p.age >= 60 ? 'elder' : p.sexe === 'F' ? 'woman' : 'man', outfit = morph === 'elder' ? 'elder' : p.sexe === 'F' ? 'villager_f' : 'villager';
     const Rl = Joe.math.rng(parseInt(p.id.slice(1), 10) * 7919 + 13), look = Joe.generateLook(PK.catalog, outfit, morph, Rl); look.name = p.prenom;
     look.parts = look.parts.filter(x => !/Hat|Cap|Helmet|Beanie/.test(x));
-    let col = (look.colors.top || '').toLowerCase(); if (!COULEURS[col] || pris.has(col)) { const L2_ = PAL.filter(c => !pris.has(c)); col = L2_[Math.floor(R() * L2_.length)]; } pris.add(col); look.colors.top = col; look.colors.top2 = col;
+    let col = (look.colors.top || '').toLowerCase(); if (sp && COULEURS[sp.col]) col = sp.col; else if (!COULEURS[col] || pris.has(col)) { const L2_ = PAL.filter(c => !pris.has(c)); col = L2_[Math.floor(R() * L2_.length)]; } pris.add(col); look.colors.top = col; look.colors.top2 = col;
     const c = new Joe.Character(PK, look), clip = p.bord === 'lit' ? 'Read_Sit' : k < 2 ? 'Sit_Chair' : p.bord === 'parle' ? 'Sit_Idle' : 'Sit_Chair';
     c.play(clip, { fade: 0, offset: Rl() * 4 });
     PASSAGERS.liste.push({ p, c, place, clip, couleur: col, enFace: k < 2, lx: place.x, ly: FL + .1, lz: place.z, yawL: place.yaw, sujets: new Set(), relation: 0, connu: false, memoire: [], donne: -1e9, dort: false, cache: false, mort: false });
@@ -6869,18 +6909,19 @@ $('bCarnet').onclick = () => basculerCarnet(); $('cnFermer').onclick = () => bas
 addEventListener('keydown', e => { if (e.code === 'Escape' && !$('lettre').hidden) { $('lettre').hidden = true; e.stopImmediatePropagation(); return; } if (e.code === 'KeyJ' && !DIALOGUE.ouvert && $('accueil').hidden && !CINE.actif) basculerCarnet(); if (e.code === 'Escape' && !$('carnet').hidden) basculerCarnet(false); });
 function basculerMenu(ouvrir) {
   const m = $('menu'), o = ouvrir ?? m.hidden; if (o && !$('accueil').hidden) return;
-  m.hidden = !o; A.skipUpdate = !!o; if (o) arreterVoix(); majBoutonVoix(); $('bMenu').setAttribute('aria-pressed', !!o); $('mnSon').textContent = 'Son : ' + (SON.coupe ? 'coupé' : 'activé'); GP.sel = 0;
+  if (o) { try { if (PARTIE.slot && !pourquoiPasSauver()) sauver(PARTIE.slot, true); } catch (e) {} }   // 1.3 : sortie vers le menu = sauvegarde automatique
+  m.hidden = !o; A.skipUpdate = !!o; if (o) arreterVoix(); majBoutonVoix(); if (o) majMenuSauvegarde(); else { fermerSlots(); PARTIE.conf = ''; } $('bMenu').setAttribute('aria-pressed', !!o); $('mnSon').textContent = 'Son : ' + (SON.coupe ? 'coupé' : 'activé'); GP.sel = 0;
   if (o) $('mnAide').innerHTML = touch ? '<b>Pouce gauche</b> marcher · <b>glisser</b> regarder<br><b>Bouton</b> agir · <b>État</b> et <b>Carnet</b> en haut à droite' : '<b>ZQSD</b> marcher · <b>Maj</b> courir · <b>glisser</b> regarder<br><b>E</b> agir · <b>B</b> état · <b>J</b> carnet · <b>Échap</b> menu<br><b>Manette</b> : stick gauche marcher, stick droit regarder, Croix agir, Carré état, Triangle carnet, Options menu';
   else cv.focus({ preventScroll: true });
   if (SON.ctx) try { o ? SON.ctx.suspend() : SON.ctx.resume(); } catch (e) {}
 }
 $('mnSon').onclick = () => { sonReveil(); sonCoupe(!SON.coupe); $('mnSon').textContent = 'Son : ' + (SON.coupe ? 'coupé' : 'activé'); };
 $('bMenu').onclick = () => basculerMenu(); $('mnReprendre').onclick = () => basculerMenu(false);
-$('mnRecommencer').onclick = () => location.reload();
-addEventListener('keydown', e => { if (e.code !== 'Escape' || !$('accueil').hidden) return; if (!$('carnet').hidden || DIALOGUE.ouvert) return; e.preventDefault(); basculerMenu(); }, true);
+// 1.3 : « Recommencer le voyage », « Menu principal », « Quitter » : voir SAUVEGARDES (2/2)
+addEventListener('keydown', e => { if (e.code === 'Escape' && !$('slots').hidden) { e.preventDefault(); e.stopImmediatePropagation(); fermerSlots(); return; } if (e.code !== 'Escape' || !$('accueil').hidden) return; if (!$('carnet').hidden || DIALOGUE.ouvert) return; e.preventDefault(); basculerMenu(); }, true);
 function quitterAccueil() { $('accueil').hidden = true; cv.focus({ preventScroll: true }); sonReveil(); $('fondu').classList.add('ouvre'); texteAide(); }
-$('acJouer').onclick = quitterAccueil;
-addEventListener('keydown', e => { if (!$('accueil').hidden && (e.code === 'Enter' || e.code === 'Space')) { e.preventDefault(); quitterAccueil(); } }, true);
+$('acJouer').onclick = () => { quitterAccueil(); PARTIE.demande = true; };   // 1.3 : nouvelle nuit sur l'emplacement en cours (nouvelle boucle ou voyage recommencé)
+addEventListener('keydown', e => { if (($('accueil').hidden && $('slots').hidden && $('quitte').hidden) || REPRISE.actif || !(e.code === 'Enter' || e.code === 'Space')) return; const f = document.activeElement; if (f && f.tagName === 'BUTTON' && f.closest('#accueil,#slots,#quitte')) return; e.preventDefault(); const L = choixVisibles(); const b = L[GP.sel % Math.max(1, L.length)] || L[0]; if (b) b.click(); }, true);
 $('acAide').innerHTML = touch ? '<b>Pouce gauche</b> marcher · <b>glisser</b> regarder · <b>bouton</b> agir · <b>État</b>, <b>Carnet</b> et <b>Menu</b> en haut à droite' : '<b>ZQSD</b> marcher · <b>Maj</b> courir · <b>E</b> agir · <b>B</b> état · <b>J</b> carnet · <b>Échap</b> menu · manette reconnue';
 
 // =====================================================================================
@@ -7018,17 +7059,20 @@ majBoutonVoix();
 //  MANETTE (PS4 et toute manette au format standard) — mêmes boutons que HDF
 // =====================================================================================
 const zm = v => Math.abs(v) < .18 ? 0 : (v - Math.sign(v) * .18) / .82;
-function choixVisibles() { if (!$('capture').hidden) return [...document.querySelectorAll('#capture button')]; if (!$('lettre').hidden) return [...document.querySelectorAll('#lettre button')]; if (!$('menu').hidden) return [...document.querySelectorAll('#menu .mnBoite > button')]; if (!$('accueil').hidden) return [...document.querySelectorAll('#accueil .acBoutons button')]; if (DIALOGUE.ouvert) return [...document.querySelectorAll('#dlChoix button')]; return []; }
+function choixVisibles() { if (REPRISE.actif) return [$('rpBouton')]; if (!$('quitte').hidden) return [$('quRetour')]; if (!$('slots').hidden) return [...document.querySelectorAll('#slots .slBoite > button:not(.off)')]; if (!$('accueil').hidden) return [...document.querySelectorAll('#accueil .acPanneau:not([hidden]) > button:not([hidden]):not(.off)')];   /* 1.3 : menu principal et sauvegardes à la manette */
+  if (!$('capture').hidden) return [...document.querySelectorAll('#capture button')]; if (!$('lettre').hidden) return [...document.querySelectorAll('#lettre button')]; if (!$('menu').hidden) return [...document.querySelectorAll('#menu .mnBoite > button')]; if (!$('accueil').hidden) return [...document.querySelectorAll('#accueil .acBoutons button')]; if (DIALOGUE.ouvert) return [...document.querySelectorAll('#dlChoix button')]; return []; }
 function surligner() { const L = choixVisibles(), dl = DIALOGUE.ouvert; L.forEach((b, i) => { const on = i === GP.sel % Math.max(1, L.length); b.classList.toggle('gpSel', GP.actif && on && !dl); b.classList.toggle('sel', dl && on); }); }
 function boutonManette(i) {
-  sonReveil(); const L = choixVisibles();
+  sonReveil(); if (REPRISE.actif) { if (i === 0 || i === 9) reprendrePartie(); return; }   /* 1.3 : écran de reprise (Croix / Options) */
+  const L = choixVisibles();
+  if (i === 1 && !$('slots').hidden) { fermerSlots(); return; } if (i === 1 && !$('accueil').hidden && !$('acPanOptions').hidden) { panneauAccueil('acMain'); return; }
   if (i === 12 || i === 13) { if (L.length) { GP.sel = (GP.sel + (i === 13 ? 1 : L.length - 1)) % L.length; surligner(); } return; }
   if (CINE.actif) { if (i === 0 || i === 9 || i === 1) passerCine(); return; }
   if (i === 0) { if (L.length) { (L[GP.sel % L.length] || L[0]).click(); GP.sel = 0; setTimeout(surligner, 50); return; } agir(); return; }
   if (i === 1) { if (!$('lettre').hidden) { $('lettre').hidden = true; return; } if (!$('carnet').hidden) { basculerCarnet(false); return; } if (!$('menu').hidden) { basculerMenu(false); return; } if (DIALOGUE.ouvert) { fermerDialogue(); return; } if (HORLOGE.k > 1) reveiller(); return; }
   if (i === 2 && $('accueil').hidden) { $('bEtat').click(); return; }
   if (i === 3 && $('accueil').hidden) { basculerCarnet(); return; }
-  if (i === 9) { if (!$('accueil').hidden) { quitterAccueil(); return; } basculerMenu(); return; }
+  if (i === 9) { if (!$('accueil').hidden || !$('slots').hidden || !$('quitte').hidden) { if (L.length) (L[GP.sel % L.length] || L[0]).click(); return; } basculerMenu(); return; }
 }
 function majManette(dt) {
   const P = navigator.getGamepads ? navigator.getGamepads() : []; let g = null; for (const q of P) if (q && q.connected) { g = q; break; }
@@ -7098,6 +7142,7 @@ function procheDe(p, R) {
 }
 const OBJETS_PERDUS = ['ses lunettes', 'son écharpe', 'son briquet', 'son stylo'];
 function genererAffaire() {
+  if (CHARGE) { const r = affaireDepuis(CHARGE.aff); if (r) return r; PARTIE.erreur = 'Sauvegarde incompatible avec cette version : l’affaire n’a pas pu être reconstituée. Rien n’a été chargé.'; CHARGE = null; }   // 1.3
   const R = Math.random;
   for (let essai = 0; essai < 200; essai++) {
     const pool = VOYAGEURS.slice().sort(() => R() - .5), cast = pool.slice(0, 6);
@@ -7174,8 +7219,8 @@ const ETAPES = [
   { id: 'denouement', acte: 5, cine: true, req: ['confrontation'] } ];
 const ACTES = ['', 'Acte I — La nuit', 'Acte II — La scène', 'Acte III — Les témoins', 'Acte IV — Les fausses pistes', 'Acte V — La vérité'];
 const etapeDispo = E => !fait(E.id) && (E.req || []).every(fait);
-function finir_(id) { if (fait(id)) return; ENQ.fait.add(id); majObjectifs(true); const n = ENQ.fait.size; if (n % 5 === 0 || id === 'chrono') sauverEtat(); }
-function indice(id, nom, texte) { if (ENQ.indices.some(i => i.id === id)) return false; ENQ.indices.push({ id, nom, texte, h: heureTxt(HORLOGE.min) }); notifier('Nouvel indice : ' + nom + '.'); return true; }
+function finir_(id) { if (fait(id)) return; ENQ.fait.add(id); majObjectifs(true); sauverEtat(); }   // 1.3 : chaque étape franchie demande une sauvegarde automatique (faite dès que c'est sûr)
+function indice(id, nom, texte) { if (ENQ.indices.some(i => i.id === id)) return false; ENQ.indices.push({ id, nom, texte, h: heureTxt(HORLOGE.min) }); notifier('Nouvel indice : ' + nom + '.'); PARTIE.demande = true; return true; }
 function chrono(min, texte) { if (ENQ.chrono.some(c => c.texte === texte)) return; ENQ.chrono.push({ min, texte }); ENQ.chrono.sort((a, b) => a.min - b.min); }
 const hm = m => heureTxt(m < 0 ? m + 1440 : m);
 function passer(min) { HORLOGE.min += min; }   // chaque fouille, chaque examen prend du temps
@@ -7390,7 +7435,7 @@ function actionEnquete() {
     poi([xa + 1.12, FL + 1.75, L2 - .14], 'wc', 'Examiner le vasistas', () => { passer(2); finir_('vasistas'); indice('vasistas', 'Le vasistas', M.vasistas); }, .9, 1.8);
     poi([xb - .16, FL + 1.45, -.78], 'avant', AFF.m === 'montre' && fait('ramasser') && !fait('reconstitution') ? M.recon.lib : 'Écouter la radio de service', () => { if (AFF.m === 'montre' && fait('ramasser') && !fait('reconstitution')) { reconstituer(); return; } ecouterRadio(); }, .9, 1.6);
     poi([xb - .16, FL + 1.42, .72], 'avant', AFF.m === 'coupure' && fait('ramasser') && !fait('reconstitution') ? M.recon.lib : 'Regarder le tableau électrique', () => { if (AFF.m === 'coupure' && fait('ramasser') && !fait('reconstitution')) { reconstituer(); return; } notifier(AFF.m === 'coupure' && fait('annonce') ? 'Le disjoncteur. Il faudra le regarder de plus près, avec ce qu’on a trouvé.' : 'Le tableau électrique de la voiture. Rien d’anormal, à première vue.'); }, .9, 1.6);
-    if (AFF.m === 'exterieur' && fait('ramasser') && !fait('reconstitution')) poi([xa + 1.15, FL + 1.1, -L2 + .1], 'arriere', M.recon.lib, () => { const P = TRAIN.portes.find(q => q.x < V1c); P.cible = 1; setTimeout(() => { P.cible = 0; }, 6000); reconstituer(); }, .88, 1.6);
+    if (AFF.m === 'exterieur' && fait('ramasser') && !fait('reconstitution')) poi([xa + 1.15, FL + 1.1, -L2 + .1], 'arriere', M.recon.lib, () => { const P = TRAIN.portes.find(q => q.x < V1c); P.cible = 1; bientot(6000); setTimeout(() => { P.cible = 0; }, 6000); reconstituer(); }, .88, 1.6);
     if (fait('poursuite') && !fait('ramasser')) poi([xa + 1.3, FL + .08, -.75], 'arriere', 'Ramasser l’objet', () => { finir_('ramasser'); passer(1); indice('objet', 'L’objet jeté', METHODES[AFF.m].objet.charAt(0).toUpperCase() + METHODES[AFF.m].objet.slice(1) + '. Quelqu’un a voulu s’en débarrasser par la porte, en pleine nuit.'); cinematique([carton('Acte IV', 'Les fausses pistes · ' + hm(HORLOGE.min), 2.6)]); }, .85, 2.2);
     if (ENQ.meurtre2 && !fait('temoin')) poi([xb - 1.25, FL + .4, .25], 'avant', 'Examiner le corps de ' + AFF.temoin.prenom, () => { const coul = COULEURS[acteurDe(AFF.coupable).couleur] || 'sombre'; passer(3); finir_('temoin'); indice('corps2', 'Le corps de ' + AFF.temoin.prenom, 'Dans sa main serrée, un brin de laine ' + coul + ', arraché à une manche. ' + AFF.temoin.prenom + ' a dû se débattre.'); }, .86, 1.8);
     // valise de la victime, bagages des suspects
@@ -7413,7 +7458,7 @@ function fouiller(p) {
   else if (p === CONTROLEUR) txt = 'La sacoche du contrôleur : un carnet de poinçonnage, une lampe, un sifflet, un horaire sans nom de gare. Juste « Arrivée : 6 h 00 ».';
   else txt = ['Des vêtements, un livre corné, une trousse de toilette.', 'Un thermos vide, des biscuits, un plan de ville que vous ne reconnaissez pas.', 'Des lettres jamais envoyées, un pull, un appareil photo jetable.'][p.id.charCodeAt(2) % 3] + ' Rien de suspect.';
   ouvrirTexte('Les bagages de ' + p.prenom + ' ' + p.nom, txt);
-  if (nouv && ENQ.fouilles.has(AFF.coupable.id) && ENQ.fouilles.size >= 3 && !fait('bagages')) { finir_('bagages'); setTimeout(() => { if (!CINE.actif && !DIALOGUE.ouvert) sequencePoursuite(); else ENQ.poursuiteEnAttente = true; }, 1800); }
+  if (nouv && ENQ.fouilles.has(AFF.coupable.id) && ENQ.fouilles.size >= 3 && !fait('bagages')) { finir_('bagages'); bientot(1800); setTimeout(() => { if (!CINE.actif && !DIALOGUE.ouvert) sequencePoursuite(); else ENQ.poursuiteEnAttente = true; }, 1800); }
 }
 function reconstituer() { const M = METHODES[AFF.m]; passer(4); finir_('reconstitution'); indice('recon', 'La reconstitution', M.recon.texte); ouvrirTexte('Reconstitution', M.recon.texte); }
 function ecouterRadio() { gresille(3.2); const fr = ['… convoi sept… voiture un… le colis ' + AFF.victime.nom + ' ne doit pas arriver…', '… blouses à l’aube, quai unique… sujet ' + (19 + MEMOIRE.boucle) + ' : à confirmer…', '… elle veut un nom. Un seul. Qu’on lui donne un nom…']; if (!fait('radio')) { finir_('radio'); indice('radio', 'La radio de service', 'Des voix hachées : « Le colis ' + AFF.victime.nom + ' ne doit pas arriver. » « Blouses à l’aube, quai unique. » « Elle veut un nom. »'); }
@@ -7505,7 +7550,7 @@ function carnetEnquete() {
 function brancherCarnet() {
   const b = $('dedOk'); if (b) b.onclick = () => { const id = $('dedC').value, p = AFF.suspects.find(q => q.id === id); ENQ.deduction = { p, m: $('dedM').value, pq: $('dedP').value }; if (!etapeDispo(ETAPES.find(E => E.id === 'deduction'))) ENQ.accuseTot = true; ENQ.fait.add('deduction'); basculerCarnet(false); sequenceReunion(); };
   const l = $('cnLettre'); if (l) l.onclick = () => lireLettre(lettreDeLaBoucle());
-  if (fait('souvenir') && !fait('chrono')) { finir_('chrono'); setTimeout(() => cinematique([carton('Acte III', 'Les témoins · ' + hm(HORLOGE.min), 2.6)]), 600); }
+  if (fait('souvenir') && !fait('chrono')) { finir_('chrono'); bientot(600); setTimeout(() => cinematique([carton('Acte III', 'Les témoins · ' + hm(HORLOGE.min), 2.6)]), 600); }
 }
 function sequenceReunion() {
   const ct = CTRL.a, xb = V1.x1, vivants = PASSAGERS.liste.filter(a => !a.ctrl && !a.mort), acc = acteurDe(ENQ.deduction.p);
@@ -7611,11 +7656,11 @@ function epilogue(fin) {
     ['fin', 'BOUCLE ' + MEMOIRE.boucle] ];
   L.innerHTML = lignes.map(([c, t]) => '<p class="' + c + '">' + t + '</p>').join('') + '<p class="on"><button class="chip" id="capLettre">Lire la lettre « I. »</button> <button class="chip" id="capBoucle">Nouvelle boucle · un autre meurtre</button></p>';
   el.hidden = false; el.classList.add('aube'); [...L.children].forEach((q, i) => setTimeout(() => q.classList.add('on'), 600 + i * 900));
-  $('capLettre').onclick = () => lireLettre(lettreDeLaBoucle()); $('capBoucle').onclick = () => { MEMOIRE.boucle++; sauverMemoire(); location.reload(); };
+  $('capLettre').onclick = () => lireLettre(lettreDeLaBoucle()); $('capBoucle').onclick = () => { MEMOIRE.boucle++; sauverMemoire(); try { if (PARTIE.slot) sessionStorage.setItem('hdf-train-nouvelle', PARTIE.slot); } catch (e) {} location.reload(); };
 }
 
 // ---------------------------------------------------------------- sauvegarde légère de l'enquête en cours (reprise après rechargement : on repart de la dernière étape franchie)
-function sauverEtat() { /* l'affaire est tirée à chaque chargement : on garde seulement la mémoire des boucles (choix assumé : une nuit = une partie) */ }
+function sauverEtat() { PARTIE.demande = true; }   // 1.3 : la sauvegarde automatique est faite par la boucle des sauvegardes, au premier moment sûr
 function effacerEtat() {}
 
 // =====================================================================================
@@ -7639,7 +7684,7 @@ function majEnquete(dt) {
 // =====================================================================================
 //  MISE EN ROUTE
 // =====================================================================================
-ROUTE.u = 2600 + Math.floor(Math.random() * 40) * SEG; ROUTE.off = ROUTE.u; majOffM(); ROUTE.v = ROUTE.cible;
+ROUTE.u = CHARGE && CHARGE.route && Number.isFinite(CHARGE.route.u) ? CHARGE.route.u : 2600 + Math.floor(Math.random() * 40) * SEG; ROUTE.off = ROUTE.u;   // 1.3 : partie chargée → le train repart d'où il était majOffM(); ROUTE.v = ROUTE.cible;
 let LOCO, VOITURES;
 // =====================================================================================
 //  TRAINS CROISÉS : notre propre modèle (locomotive + 3 voitures), autres couleurs, sur la voie de droite, en sens inverse
@@ -7738,10 +7783,151 @@ A.onUpdate(dt => {
 });
 A.onBeforeRender(() => { if (ENQ.noir) return; const n = A.nuit(), e = A.camera.fixed.eye; if (n > .05) for (const p of TRAIN.lampes) A.addLight({ p: versMonde(p[0], p[1], p[2]), c: [1, .82, .58], i: 7 * Math.min(1, n * 1.6), r: 8 });
   const W = TRAIN.wc; if (W && (zoneDe(Cm.x, Cm.z) === 'wc' || W.ouv > .3 || CINE.actif)) A.addLight({ p: versMonde(V1.x0 + 1.2, FL + 2.2, 1.0), c: [1, .9, .75], i: 4, r: 3.5 }); });
+// =====================================================================================
+//  1.3 — SAUVEGARDES (2/2) : menu principal, 3 emplacements, sauvegarde automatique, reprise après rechargement (repris d'HDF : ENCLOS 1.1.3)
+//  Ce qui est sauvé : l'affaire (identifiants du casting, victime, coupable, méthode, témoins, liste…), la place et la couleur de chaque voyageur,
+//  la position du train, l'heure, les besoins, le sac, le joueur, toute l'enquête (étapes, indices, chronologie, interrogatoires, fouilles…),
+//  l'état de chaque voyageur (position, pose, mort, caché, endormi, relation, sujets abordés…), le contrôleur, les portes, et la mémoire des boucles.
+//  On ne sauve pas au milieu d'une scène, d'une conversation, d'un déplacement, d'un somme ou du dénouement : on dit pourquoi, et l'automatique réessaie.
+// =====================================================================================
+function affaireDepuis(d) {
+  try { if (!d || !Array.isArray(d.cast)) return null; const P = id => id === CONTROLEUR.id ? CONTROLEUR : VOYAGEURS.find(p => p.id === id) || null, un = k => d[k] == null ? null : P(d[k]);
+    const r = { cast: d.cast.map(P), victime: un('victime'), suspects: (d.suspects || []).map(P), coupable: un('coupable'), m: d.m, expert: un('expert'), rh1: un('rh1'), rh2: un('rh2'), temoin: un('temoin'), confirmeur: un('confirmeur'), pc: d.pc, pr: d.pr, liste: (d.liste || []).slice(), perdu: d.perdu, tMeurtre: d.tMeurtre ?? 33, tPorte: d.tPorte ?? 37 };
+    if (r.cast.length !== 6 || r.cast.some(x => !x) || r.suspects.length !== 6 || r.suspects.some(x => !x) || ['victime', 'coupable', 'expert', 'rh1', 'temoin', 'confirmeur'].some(k => !r[k]) || !METHODES[r.m] || !r.pc || !r.pr || r.liste.length !== 7) return null;
+    return r; } catch (e) { return null; }
+}
+function affaireDonnees() { const id = p => p ? p.id : null; return { cast: AFF.cast.map(id), victime: id(AFF.victime), suspects: AFF.suspects.map(id), coupable: id(AFF.coupable), m: AFF.m, expert: id(AFF.expert), rh1: id(AFF.rh1), rh2: id(AFF.rh2), temoin: id(AFF.temoin), confirmeur: id(AFF.confirmeur), pc: { ...AFF.pc }, pr: { ...AFF.pr }, liste: AFF.liste.slice(), perdu: AFF.perdu, tMeurtre: AFF.tMeurtre, tPorte: AFF.tPorte }; }
+const estPlat = v => v && typeof v === 'object' && (Object.getPrototypeOf(v) === Object.prototype || Object.getPrototypeOf(v) === null);
+const personneDe = id => id === CONTROLEUR.id ? CONTROLEUR : VOYAGEURS.find(p => p.id === id) || null;
+function ser(v, vus) {   // en données JSON : voyageur (acteur) → { $a }, personne → { $p }, Set → { $set } ; fonctions et objets du moteur laissés de côté
+  if (v == null || typeof v === 'string' || typeof v === 'boolean') return v; if (typeof v === 'number') return Number.isFinite(v) ? v : null; if (typeof v !== 'object') return undefined;
+  if (PASSAGERS.liste.includes(v)) return { $a: v.p.id }; if (v === CONTROLEUR || VOYAGEURS.includes(v)) return { $p: v.id }; if (vus.has(v)) return undefined; vus.add(v);
+  if (v instanceof Set) return { $set: [...v].map(x => ser(x, vus)) }; if (Array.isArray(v)) return v.map(x => { const r = ser(x, vus); return r === undefined ? null : r; });
+  if (!estPlat(v)) return undefined; const o = {}; for (const k of Object.keys(v)) { const r = ser(v[k], vus); if (r !== undefined) o[k] = r; } return o;
+}
+function deser(v) { if (v == null || typeof v !== 'object') return v; if (Array.isArray(v)) return v.map(deser); if ('$a' in v) return PASSAGERS.liste.find(a => a.p.id === v.$a) || null; if ('$p' in v) return personneDe(v.$p); if ('$set' in v) return new Set(v.$set.map(deser)); const o = {}; for (const k in v) o[k] = deser(v[k]); return o; }
+const SANS_ENQ = ['nObjet', 'nJete', 'homme', 'blouses', 'apres', 'confront', 'fin', 'deduction'], SANS_ACTEUR = ['c', 'p', 'place', 'couleur', 'enFace', 'ctrl', 'apres', 'clip'], SANS_CTRL = ['c', 'a'];
+const champs = (o, sans) => { const d = {}; for (const k of Object.keys(o)) { if (sans.includes(k) || k[0] === '_') continue; const r = ser(o[k], new Set()); if (r !== undefined) d[k] = r; } return d; };
+function pourquoiPasSauver() {
+  if (!PASSAGERS.pret) return 'pendant le chargement'; if (REPRISE.actif) return 'avant la reprise de la partie'; if (!$('accueil').hidden) return 'depuis le menu principal : aucune partie en cours';
+  if (CINE.actif) return 'pendant une scène'; if (ENQ.fin || fait('deduction') || !$('capture').hidden) return 'après la déduction : le dénouement se joue d’une traite';
+  if (DIALOGUE.ouvert || ENQ.confront) return 'pendant une conversation'; if (HORLOGE.k > 1) return 'pendant que vous somnolez';
+  if (ENQ.apres || ENQ.poursuiteEnAttente || performance.now() < PARTIE.occupe) return 'pendant qu’un événement se déclenche (réessayez dans quelques secondes)';
+  if (PASSAGERS.liste.some(a => a.chemin && a.chemin.length && a.apres && !a.cache)) return 'pendant qu’un voyageur se déplace vers une action';   // une simple marche est sauvée (trajet compris) ; une marche suivie d'une action ne l'est pas return null;
+}
+function resumeDonnees() { const E = ETAPES.find(q => !fait(q.id)); return { lance: ENQ.lance, victime: fait('forcer') ? nomComplet(AFF.victime) : '', acte: ENQ.lance ? (E ? E.acte : 5) : 0, etapes: ENQ.fait.size, total: ETAPES.length, indices: ENQ.indices.length, min: Math.floor(HORLOGE.min), boucle: MEMOIRE.boucle }; }
+function etatPartie() {
+  const places = {}; for (const a of PASSAGERS.liste) if (a.place) places[a.p.id] = { rang: a.place.rang, sg: a.place.sg, siege: a.place.siege, col: a.couleur };
+  const acteurs = PASSAGERS.liste.map(a => ({ id: a.p.id, clip: a.c && a.c.player && a.c.player.cur ? a.c.player.cur.name : null, v: champs(a, SANS_ACTEUR) }));
+  return { format: 1, version: HDF_VERSION, date: Date.now(), aff: affaireDonnees(), places, route: { u: ROUTE.u, km: ROUTE.km, v: ROUTE.v }, ciel,
+    horloge: { min: HORLOGE.min, vitesse: HORLOGE.vitesse, jour: HORLOGE.jour }, besoins: { ...BESOINS }, sacd: { ...SACD }, seuils: ser(ETAT.seuils, new Set()), vus: ser(VUS, new Set()),
+    joueur: { assis: Cm.assis, x: Cm.x, z: Cm.z, a: Cm.a, p: Cm.p, y: Cm.y }, enq: champs(ENQ, SANS_ENQ), acteurs, ctrl: champs(CTRL, SANS_CTRL),
+    wc: TRAIN.wc ? { verrou: TRAIN.wc.verrou, force: TRAIN.wc.force, ouv: TRAIN.wc.ouv, cible: TRAIN.wc.cible } : null, portes: TRAIN.portes.map(P => ({ cible: P.cible, ouv: P.ouv })), porteVue: !!SON.porteVue,
+    memoire: JSON.parse(JSON.stringify(MEMOIRE)), resume: resumeDonnees() };
+}
+function indiquer(t) { const el = $('svInd'); el.textContent = t; el.classList.add('on'); clearTimeout(indiquer.t); indiquer.t = setTimeout(() => el.classList.remove('on'), 2200); }
+function sauver(n, auto) {
+  n = n || PARTIE.slot; if (!n) return false; const non = pourquoiPasSauver(); if (non) { if (!auto) notifier('Impossible de sauvegarder ' + non + '.'); return false; }
+  try { localStorage.setItem(PARTIE.cle(n), JSON.stringify(etatPartie())); PARTIE.slot = n; PARTIE.demande = false; PARTIE.dernier = performance.now(); PARTIE.heure = new Date();
+    if (auto) indiquer('Sauvegarde automatique · emplacement ' + n); else notifier('Partie sauvegardée · emplacement ' + n + '.'); majMenuSauvegarde(); return true; }
+  catch (e) { notifier('Sauvegarde impossible : la mémoire du navigateur est pleine ou bloquée.'); return false; }
+}
+function resumeSlot(n) { const s = lireSlot(n); if (!s || !s.resume) return null; const r = s.resume, d = new Date(s.date);
+  const quoi = r.victime ? 'L’affaire ' + r.victime : r.lance ? 'La nuit · voiture 1' : 'Le voyage · avant minuit', ou = r.acte ? (ACTES[r.acte] || '').replace(' — ', ' · ') : 'Prologue';
+  return quoi + ' · ' + ou + '<small>Étape ' + r.etapes + ' / ' + r.total + ' · ' + r.indices + ' indice' + (r.indices > 1 ? 's' : '') + ' · ' + heureTxt(r.min) + (r.boucle > 1 ? ' · boucle ' + r.boucle : '') + '</small><small>Sauvegardée le ' + d.toLocaleDateString('fr-FR') + ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + '</small>'; }
+function plusRecent() { let b = 0, t = 0; for (let n = 1; n <= 3; n++) { const s = lireSlot(n); if (s && s.date > t) { t = s.date; b = n; } } return b; }
+function chargerSlot(n) { if (!lireSlot(n)) { notifier('Cet emplacement est vide.'); return; } try { sessionStorage.setItem('hdf-train-charger', n); } catch (e) { notifier('Chargement impossible : le navigateur bloque le stockage de session.'); return; } location.reload(); }
+function appliquerPartie(s) {
+  PARTIE.charge = true; if (DIALOGUE.ouvert) fermerDialogue(true);
+  // le voyage et le temps (le train a pu rouler pendant l'écran de reprise : sans recalage du monde, on le remet exactement où il était)
+  if (Math.abs(ROUTE.off - s.route.u) < 1e-6) ROUTE.u = s.route.u; ROUTE.km = s.route.km; ROUTE.v = s.route.v; ROUTE.arret = null;
+  Object.assign(HORLOGE, { min: s.horloge.min, vitesse: s.horloge.vitesse, jour: s.horloge.jour, k: 1 }); $('sommeil').hidden = true; ciel = s.ciel || 'clair'; heure(HORLOGE.min / 60, true);
+  Object.assign(BESOINS, s.besoins); Object.assign(SACD, s.sacd); ETAT.seuils = deser(s.seuils) || {}; VUS.length = 0; for (const v of deser(s.vus) || []) VUS.push(v);
+  Object.assign(Cm, s.joueur);
+  // l'enquête
+  for (const k of Object.keys(s.enq)) { const v = deser(s.enq[k]); if (ENQ[k] instanceof Set) { ENQ[k].clear(); for (const x of v.values ? v : []) ENQ[k].add(x); } else ENQ[k] = v; }
+  ENQ.apres = null; ENQ.confront = null; ENQ.fin = null; ENQ.deduction = null; if (fait('bagages') && !fait('poursuite')) ENQ.poursuiteEnAttente = true;
+  // les voyageurs et le contrôleur
+  for (const d of s.acteurs) { const a = PASSAGERS.liste.find(q => q.p.id === d.id); if (!a) continue; a.chemin = undefined; for (const k of Object.keys(d.v)) a[k] = deser(d.v[k]); a.apres = null; if (d.clip) try { a.c.play(d.clip, { fade: 0 }); } catch (e) {} }
+  const C = deser(s.ctrl); for (const k of Object.keys(C)) CTRL[k] = C[k];
+  if (s.wc && TRAIN.wc) Object.assign(TRAIN.wc, s.wc); (s.portes || []).forEach((p, i) => { const P = TRAIN.portes[i]; if (P) { P.cible = p.cible; P.ouv = p.ouv; } }); SON.porteVue = !!s.porteVue;
+  CAUSE.file.length = 0; CAUSE.tl = 0;
+  if (s.memoire) { for (const k of Object.keys(MEMOIRE)) delete MEMOIRE[k]; Object.assign(MEMOIRE, s.memoire); sauverMemoire(); }   // la mémoire des boucles de cette partie-là
+  try { majObjectifs(true); } catch (e) {} majAction(); texteAide(); PARTIE.dernier = performance.now(); PARTIE.zone = zoneDe(Cm.x, Cm.z);
+  PARTIE.etatCharge = etatPartie();   // pour vérifier (tests) que l'état chargé est identique à l'état sauvé
+  notifier('Partie chargée · emplacement ' + PARTIE.slot + ' · ' + heureTxt(HORLOGE.min) + '.');
+}
+// la reprise après rechargement : la partie ne démarre qu'après un toucher, un clic ou une touche (sinon le navigateur refuse les voix de synthèse)
+function reprendrePartie() { if (!REPRISE.actif) return; REPRISE.actif = false; $('reprise').hidden = true; quitterAccueil();
+  try { appliquerPartie(REPRISE.s); } catch (e) { console.error('chargement', e); notifier('Le chargement a échoué : la partie reprend avec une nouvelle nuit.'); } }
+$('reprise').addEventListener('click', () => reprendrePartie());
+addEventListener('keydown', e => { if (!REPRISE.actif || e.repeat) return; e.preventDefault(); e.stopImmediatePropagation(); reprendrePartie(); }, true);
+// les écrans : menu principal (dans #accueil), emplacements (#slots), quitter (#quitte)
+function panneauAccueil(p) { for (const id of ['acMain', 'acPanOptions', 'acPanBord']) $(id).hidden = id !== p; GP.sel = 0; setTimeout(surligner, 30); }
+function majAccueil() {
+  const r = plusRecent(); $('acContinuer').hidden = !r; $('acNouvelle').classList.toggle('acPrim', !r); if (r) $('acContinuer').innerHTML = 'Continuer<small>' + (resumeSlot(r) || '').replace(/<small>.*$/, '') + '</small>';
+  $('acCharger').classList.toggle('off', !r); $('acCharger').setAttribute('aria-disabled', !r);   // pas d'attribut disabled : un toucher dessus doit rester un geste (voix) $('acOptSon').textContent = 'Son : ' + (SON.coupe ? 'coupé' : 'activé'); $('acOptVoix').textContent = $('mnVoix').textContent;
+  $('acErreur').hidden = !PARTIE.erreur; $('acErreur').textContent = PARTIE.erreur; panneauAccueil(NOUVELLE ? 'acPanBord' : 'acMain');
+}
+function ouvrirSlots(mode) {
+  PARTIE.mode = mode; PARTIE.confirme = 0; $('slots').hidden = false; $('slTitre').textContent = mode === 'nouvelle' ? 'Nouvelle partie · choisir un emplacement' : mode === 'sauver' ? 'Sauvegarder' : 'Charger une partie';
+  for (let n = 1; n <= 3; n++) { const b = $('sl' + n), r = resumeSlot(n); b.innerHTML = '<b>Emplacement ' + n + (n === PARTIE.slot && $('accueil').hidden ? ' · en cours' : '') + '</b>' + (r || '<i>Vide</i>'); b.classList.toggle('off', mode === 'charger' && !r); b.setAttribute('aria-disabled', mode === 'charger' && !r); b.classList.remove('conf'); }
+  GP.sel = 0; setTimeout(surligner, 30);
+}
+function fermerSlots() { $('slots').hidden = true; PARTIE.confirme = 0; GP.sel = 0; }
+function choisirSlot(n) {
+  const plein = !!lireSlot(n);
+  if (PARTIE.mode === 'charger') { if (plein) chargerSlot(n); return; }
+  if (plein && PARTIE.confirme !== n) { ouvrirSlots(PARTIE.mode); PARTIE.confirme = n; const b = $('sl' + n); b.classList.add('conf'); b.innerHTML = '<b>Écraser l’emplacement ' + n + ' ?</b>Appuyez encore pour confirmer.<small>' + (resumeSlot(n) || '').replace(/<small>/g, ' · ').replace(/<\/small>/g, '') + '</small>'; return; }
+  if (PARTIE.mode === 'sauver') { if (sauver(n)) fermerSlots(); return; }
+  // nouvelle partie : la nuit tirée au démarrage commence ; mémoire des boucles remise à zéro (sauf, une seule fois, celle d'un joueur de la 1.2 qui n'a encore aucune sauvegarde)
+  const herite = !plusRecent() && MEMOIRE.boucle > 1;
+  try { localStorage.removeItem(PARTIE.cle(n)); } catch (e) {} PARTIE.slot = n; fermerSlots();
+  if (!herite) { for (const k of Object.keys(MEMOIRE)) delete MEMOIRE[k]; Object.assign(MEMOIRE, { boucle: 1, affaires: [], lettres: 0, vus: [] }); sauverMemoire(); }
+  quitterAccueil(); PARTIE.demande = true; PARTIE.dernier = 0;
+}
+function confirmer(id, texte, f) { if (PARTIE.conf === id) { PARTIE.conf = ''; f(); return; } PARTIE.conf = id; majMenuSauvegarde(); $(id).classList.add('conf'); $(id).textContent = texte; }
+function majMenuSauvegarde() {
+  if ($('menu').hidden) return; const non = pourquoiPasSauver();
+  $('mnSauver').disabled = false; $('mnEtat').textContent = (PARTIE.slot ? 'Emplacement ' + PARTIE.slot + (PARTIE.heure ? ' · sauvegardé à ' + PARTIE.heure.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '') : 'Aucun emplacement') + (non ? ' · sauvegarde impossible ' + non : '');
+  for (const [id, t] of [['mnRecommencer', 'Recommencer le voyage'], ['mnMenuPrincipal', 'Menu principal'], ['mnQuitter', 'Quitter le jeu']]) if (PARTIE.conf !== id) { $(id).classList.remove('conf'); $(id).textContent = t; }
+}
+function perteSiQuitte() { return !!(PARTIE.slot && pourquoiPasSauver()); }
+function allerMenuPrincipal() { if (PARTIE.slot) sauver(PARTIE.slot, true); location.reload(); }
+function quitterJeu() { const ok = PARTIE.slot ? sauver(PARTIE.slot, true) : false; basculerMenu(false); $('accueil').hidden = true; $('quitte').hidden = false; $('quTexte').textContent = ok ? 'Partie sauvegardée sur l’emplacement ' + PARTIE.slot + '. Vous pouvez fermer cet onglet.' : 'Vous pouvez fermer cet onglet.'; arreterVoix(); A.skipUpdate = true; try { SON.ctx && SON.ctx.suspend(); } catch (e) {} GP.sel = 0; try { window.close(); } catch (e) {} }
+// câblage des boutons
+$('acContinuer').onclick = () => { sonReveil(); chargerSlot(plusRecent()); };
+$('acNouvelle').onclick = () => { sonReveil(); ouvrirSlots('nouvelle'); };
+$('acCharger').onclick = () => { sonReveil(); if (!plusRecent()) return; ouvrirSlots('charger'); };
+$('acOptions').onclick = () => { sonReveil(); panneauAccueil('acPanOptions'); };
+$('acQuitter').onclick = () => quitterJeu();
+$('acOptSon').onclick = () => { sonReveil(); sonCoupe(!SON.coupe); $('acOptSon').textContent = 'Son : ' + (SON.coupe ? 'coupé' : 'activé'); };
+$('acOptVoix').onclick = () => { sonReveil(); basculerVoix(); $('acOptVoix').textContent = $('mnVoix').textContent; };
+$('acRetour').onclick = () => panneauAccueil('acMain');
+$('acAuMenu').onclick = () => { NOUVELLE = 0; PARTIE.slot = 0; majAccueil(); };
+for (let n = 1; n <= 3; n++) $('sl' + n).onclick = () => choisirSlot(n);
+$('slRetour').onclick = () => fermerSlots();
+$('mnSauver').onclick = () => { const non = pourquoiPasSauver(); if (non) { notifier('Impossible de sauvegarder ' + non + '.'); majMenuSauvegarde(); return; } ouvrirSlots('sauver'); };
+$('mnCharger').onclick = () => ouvrirSlots('charger');
+$('mnRecommencer').onclick = () => confirmer('mnRecommencer', 'Recommencer ? Appuyez encore (la nuit en cours sera perdue)', () => { try { if (PARTIE.slot) sessionStorage.setItem('hdf-train-nouvelle', PARTIE.slot); } catch (e) {} location.reload(); });
+$('mnMenuPrincipal').onclick = () => { if (perteSiQuitte()) confirmer('mnMenuPrincipal', 'Menu principal ? Appuyez encore (non sauvegardé ' + pourquoiPasSauver() + ')', () => location.reload()); else allerMenuPrincipal(); };
+$('mnQuitter').onclick = () => { if (perteSiQuitte()) confirmer('mnQuitter', 'Quitter ? Appuyez encore (non sauvegardé ' + pourquoiPasSauver() + ')', quitterJeu); else quitterJeu(); };
+$('quRetour').onclick = () => location.reload();
+// la sauvegarde automatique : étape franchie, indice trouvé, changement d'endroit (salle, toilettes, plates-formes), et toutes les 2 minutes, au premier moment sûr
+function demarrerSauvegardes() {
+  setInterval(() => { try {
+    if (!PARTIE.slot || A.skipUpdate || !$('accueil').hidden || REPRISE.actif) return; const now = performance.now(), z = zoneDe(Cm.x, Cm.z);
+    if (z !== PARTIE.zone) { if (PARTIE.zone) PARTIE.demande = true; PARTIE.zone = z; } if (now - PARTIE.dernier > 120000) PARTIE.demande = true;
+    if (PARTIE.demande && now - PARTIE.dernier > 4000 && !pourquoiPasSauver()) sauver(PARTIE.slot, true); } catch (e) {} }, 1000);
+  if (CHARGE) { REPRISE.actif = true; REPRISE.s = CHARGE; $('reprise').hidden = false; $('rpInfo').textContent = 'Partie prête · emplacement ' + PARTIE.slot + ' · ' + (resumeSlot(PARTIE.slot) || '').replace(/<small>.*$/, '') + '.'; return; }
+  majAccueil();
+}
 texteAide();
 $('acBoucle').textContent = MEMOIRE.boucle > 1 ? 'Boucle ' + MEMOIRE.boucle + ' · vous vous souvenez des nuits précédentes' : '';
 if (MEMOIRE.boucle > 1) $('acJouer').textContent = 'Remonter à bord · boucle ' + MEMOIRE.boucle;
+demarrerSauvegardes();
 self.HDF = { VOIX, parler: (p, t, k) => parler(p, t, k), profilVoix: p => profilVoix(p), arreterVoix: () => arreterVoix(), sousTitre: (a, b, c, d) => sousTitre(a, b, c, d), ouvrirDialogue: a => ouvrirDialogue(a), choisir: k => choisir(k), fermerDialogue: f => fermerDialogue(f), DIALOGUE, CONTROLEUR, sonCoupe: c => sonCoupe(c), A, Cm, ROUTE, SON, GP, PASSAGERS, BESOINS, HORLOGE, quitterAccueil, recaler, village, regionIci, versMonde, TRONCONS, VILLAGES, boutonManette, basculerMenu,
+  PARTIE, REPRISE, sauver: (n, a) => sauver(n, a), lireSlot: n => lireSlot(n), etatPartie: () => etatPartie(), appliquerPartie: s => appliquerPartie(s), chargerSlot: n => chargerSlot(n), ouvrirSlots: m => ouvrirSlots(m), choisirSlot: n => choisirSlot(n), pourquoiPasSauver: () => pourquoiPasSauver(), resumeSlot: n => resumeSlot(n), plusRecent: () => plusRecent(), reprendrePartie: () => reprendrePartie(), CTRL, TRAIN, SACD, VUS,
   ENQ, AFF, ETAPES, fermerDialogue: f => fermerDialogue(f), CINE, MEMOIRE, lancerEnquete, passerCine, actionDispo: () => actionDispo(), fait, finir_, sequenceForcer, sequenceAnnonce, sequenceTemoin, sequencePoursuite, sequenceReunion, denouement, second, acteurDe, ouvrirDialogue, choisir, presenter, fouiller, ouvrirValise, ecouterRadio, reconstituer, repondreQ, objectifs, carnetEnquete, brancherCarnet, zoneDe, majCarnet, basculerCarnet, CONTROLEUR, METHODES };
 self.HDF_VERSION = HDF_VERSION;
 })();
