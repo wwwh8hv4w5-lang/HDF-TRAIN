@@ -1,4 +1,4 @@
-# HDF TRAIN 1.4
+# HDF TRAIN 1.4.1
 
 Jeu 3D dans le navigateur (WebGL 2), construit sur le moteur HDF WALL / FSM3D, de **F.S.M Game House**.
 
@@ -6,11 +6,26 @@ Jeu 3D dans le navigateur (WebGL 2), construit sur le moteur HDF WALL / FSM3D, d
 
 Tout tient dans un seul fichier HTML autonome : `index.html`.
 
+## 1.4.1 : le portrait d'Ilona ne clignote plus
+
+- **Le défaut** : quand le train roulait, le portrait (cadre doré et photo) scintillait. Train arrêté, il était stable.
+- **La cause** : la vibration du train était appliquée à la caméra seule, et pas à la voiture.
+  - À chaque image, l'œil sautait de quelques millimètres (jusqu'à 3,5 mm à 120 km/h) par rapport à l'intérieur de la voiture.
+  - Le portrait est le seul objet très détaillé et très contrasté de la salle (filets dorés fins, photo). Il se décalait donc d'environ un pixel à chaque image, d'où le scintillement, surtout sans anticrénelage (qualité « basse », iPad).
+  - Ce n'était ni la texture, ni ses mipmaps, ni un conflit de profondeur : avec une caméra solidaire de la voiture, le portrait reste stable train lancé, même en profondeur 16 bits simulée.
+- **La correction** : la vibration est maintenant portée par la voiture 1 elle-même, donc par le repère de la caméra.
+  - L'œil et l'intérieur vibrent ensemble, comme dans un vrai train. Seul le paysage tremble par rapport à vous.
+  - Même amplitude et mêmes fréquences qu'avant, secousses comprises.
+- **Durcissement** : le cartouche « PRINCESSE ILONA » est décollé de 5 mm de son support (1,5 mm avant), et la photo de 5 mm du filet doré (2 mm avant). Cela évite tout conflit de profondeur sur un écran à profondeur réduite.
+- Le reste ne change pas, y compris le format des sauvegardes.
+- **Ce qui a été vérifié** (Chromium sans écran, SwiftShader) : 12 images consécutives par configuration, à 1, 3 et 6 m et en vue rasante, train lancé, en profil ordinateur et en profil iPad. On mesure l'écart d'une image à l'autre sur le portrait et sur une zone témoin du mur.
+- **Ce qui n'a pas été vérifié** : un vrai iPad/Safari et un vrai GPU.
+
 ## 1.4 : le portrait de la princesse Ilona
 
 - Un **portrait encadré de la princesse Ilona** est accroché dans la voiture 1, sur la cloison avant de la salle, côté gauche (celui de votre place). Il est au-dessus du dernier banc et sous le bout du porte-bagages, comme les photos des anciens compartiments. On le voit du couloir en allant vers l'avant.
 - Le cadre est doré, avec un passe-partout crème, un filet doré et un cartouche « PRINCESSE ILONA ». La photo (540 × 720, JPEG intégré au fichier, environ 89 Ko) garde ses proportions. Elle est affichée avec mipmaps et filtrage anisotrope.
-- **Le portrait est fixé à la voiture.** C'est un élément de la voiture 1 : il suit exactement sa position, sa pente et ses virages pendant que le train roule. Comme pour les parois, les secousses n'agissent que sur la caméra : le cadre ne flotte pas et ne glisse pas sur le mur.
+- **Le portrait est fixé à la voiture.** C'est un élément de la voiture 1 : il suit exactement sa position, sa pente et ses virages pendant que le train roule. Le cadre ne flotte pas et ne glisse pas sur le mur (depuis la 1.4.1, les secousses font vibrer la voiture entière, caméra comprise).
 - Le cadre est posé à quelques millimètres de la cloison, sans surface confondue avec elle, donc sans scintillement. Il reste dans l'épaisseur déjà bloquante de la cloison : les collisions, les portes, les fenêtres et les actions ne changent pas.
 - Le reste ne change pas : l'enquête, le menu principal, les 3 sauvegardes et les voix. Le format des sauvegardes ne change pas (le portrait n'y est pas enregistré) : une sauvegarde de la 1.3 est reconnue par la 1.4.
 - **Ce qui a été vérifié** (Chromium sans écran) :
