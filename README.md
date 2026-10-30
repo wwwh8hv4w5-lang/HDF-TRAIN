@@ -1,10 +1,24 @@
-# HDF TRAIN 1.3
+# HDF TRAIN 1.4
 
 Jeu 3D dans le navigateur (WebGL 2), construit sur le moteur HDF WALL / FSM3D, de **F.S.M Game House**.
 
 **Jouer en ligne : https://wwwh8hv4w5-lang.github.io/HDF-TRAIN/**
 
 Tout tient dans un seul fichier HTML autonome : `index.html`.
+
+## 1.4 : le portrait de la princesse Ilona
+
+- Un **portrait encadré de la princesse Ilona** est accroché dans la voiture 1, sur la cloison avant de la salle, côté gauche (celui de votre place). Il est au-dessus du dernier banc et sous le bout du porte-bagages, comme les photos des anciens compartiments. On le voit du couloir en allant vers l'avant.
+- Le cadre est doré, avec un passe-partout crème, un filet doré et un cartouche « PRINCESSE ILONA ». La photo (540 × 720, JPEG intégré au fichier, environ 89 Ko) garde ses proportions. Elle est affichée avec mipmaps et filtrage anisotrope.
+- **Le portrait est fixé à la voiture.** C'est un élément de la voiture 1 : il suit exactement sa position, sa pente et ses virages pendant que le train roule. Comme pour les parois, les secousses n'agissent que sur la caméra : le cadre ne flotte pas et ne glisse pas sur le mur.
+- Le cadre est posé à quelques millimètres de la cloison, sans surface confondue avec elle, donc sans scintillement. Il reste dans l'épaisseur déjà bloquante de la cloison : les collisions, les portes, les fenêtres et les actions ne changent pas.
+- Le reste ne change pas : l'enquête, le menu principal, les 3 sauvegardes et les voix. Le format des sauvegardes ne change pas (le portrait n'y est pas enregistré) : une sauvegarde de la 1.3 est reconnue par la 1.4.
+- **Ce qui a été vérifié** (Chromium sans écran) :
+  - le cadre est bien rattaché à la voiture : même matrice que la voiture à chaque image, train arrêté comme lancé ;
+  - le portrait se voit depuis le couloir, de près, en biais, pendant une secousse et à un autre moment du trajet ;
+  - pas de scintillement ni de déformation ;
+  - aucune erreur JavaScript.
+- **Ce qui n'a pas été vérifié** : l'iPad/Safari et un vrai GPU.
 
 ## 1.3 : menu principal et 3 sauvegardes
 
